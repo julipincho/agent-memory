@@ -1,0 +1,52 @@
+{
+ "agentes": [
+  {"id": "claude", "nombre": "Claude Code", "rol": "lead architect, reviewer and implementer", "especialidad": "architecture, review, integration", "runtime": "claude-code"},
+  {"id": "codex", "nombre": "Codex CLI", "rol": "implements queued task specs", "especialidad": "scoped tasks inside a workspace-write sandbox", "runtime": "codex-cli"},
+  {"id": "opencode", "nombre": "OpenCode", "rol": "implements queued task specs", "especialidad": "small scoped tasks", "runtime": "opencode"},
+  {"id": "tortu", "nombre": "Local model (Ollama)", "rol": "local assistant: reads the project and proposes changes", "especialidad": "proposals, content drafts", "runtime": "ollama"},
+  {"id": "orquestador", "nombre": "Orchestrator (queue, panel, agent registry)", "rol": "launches agents and records their lifecycle", "especialidad": "dispatch, indexing", "runtime": "python"}
+ ],
+ "proyectos": [
+  {"id": "dreamfactory", "nombre": "Global memory (rules shared by every project)", "raiz": "."},
+  {"id": "demo", "nombre": "Demo project", "raiz": "examples/demo_project"},
+  {"id": "yarael_quest", "nombre": "Yarael Quest (used by the integration tests)", "raiz": "examples/yarael_quest"},
+  {"id": "ai_game_factory", "nombre": "Restricted project (used by the permission tests)", "raiz": "examples/restricted"},
+  {"id": "pruebas", "nombre": "Client end-to-end tests (disposable data)", "raiz": "pruebas_cliente/zona"}
+ ],
+ "permisos": [
+  {"agente": "claude", "proyecto": "dreamfactory", "nivel": "curador"},
+  {"agente": "codex", "proyecto": "dreamfactory", "nivel": "lectura"},
+  {"agente": "opencode", "proyecto": "dreamfactory", "nivel": "lectura"},
+  {"agente": "tortu", "proyecto": "dreamfactory", "nivel": "lectura"},
+  {"agente": "orquestador", "proyecto": "dreamfactory", "nivel": "escritura"},
+
+  {"agente": "claude", "proyecto": "demo", "nivel": "curador"},
+  {"agente": "codex", "proyecto": "demo", "nivel": "escritura"},
+  {"agente": "opencode", "proyecto": "demo", "nivel": "escritura"},
+  {"agente": "tortu", "proyecto": "demo", "nivel": "lectura"},
+  {"agente": "orquestador", "proyecto": "demo", "nivel": "escritura"},
+
+  {"agente": "claude", "proyecto": "yarael_quest", "nivel": "curador"},
+  {"agente": "codex", "proyecto": "yarael_quest", "nivel": "escritura"},
+  {"agente": "opencode", "proyecto": "yarael_quest", "nivel": "escritura"},
+  {"agente": "tortu", "proyecto": "yarael_quest", "nivel": "lectura"},
+  {"agente": "orquestador", "proyecto": "yarael_quest", "nivel": "escritura"},
+
+  {"agente": "claude", "proyecto": "ai_game_factory", "nivel": "escritura"},
+  {"agente": "orquestador", "proyecto": "ai_game_factory", "nivel": "escritura"},
+
+  {"agente": "claude", "proyecto": "pruebas", "nivel": "curador"},
+  {"agente": "codex", "proyecto": "pruebas", "nivel": "escritura"},
+  {"agente": "tortu", "proyecto": "pruebas", "nivel": "lectura"},
+  {"agente": "orquestador", "proyecto": "pruebas", "nivel": "escritura"}
+ ],
+ "presupuestos": [
+  {"agente": "*", "operacion": "inicio", "tokens": 1200},
+  {"agente": "*", "operacion": "reanudar", "tokens": 1500},
+  {"agente": "*", "operacion": "compactacion", "tokens": 1500},
+  {"agente": "*", "operacion": "cambio_tarea", "tokens": 900},
+  {"agente": "*", "operacion": "despacho", "tokens": 700},
+  {"agente": "*", "operacion": "busqueda", "tokens": 600},
+  {"agente": "claude", "operacion": "inicio", "tokens": 1500}
+ ]
+}

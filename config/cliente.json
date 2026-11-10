@@ -1,0 +1,14 @@
+{
+ "proyecto_defecto": "demo",
+ "proyectos": {
+  "demo": {
+   "raiz": "examples/demo_project",
+   "corpus": ["*.md", "docs/*.md"]
+  },
+  "pruebas": {
+   "raiz": "pruebas_cliente/zona",
+   "corpus": []
+  }
+ },
+ "_nota": "Memory projects known to the client. Relative roots are resolved against this repository. The hooks only act inside one of these roots (most specific wins)."
+}

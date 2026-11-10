@@ -1,0 +1,46 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {"type": "command", "command": "python", "args": ["/path/to/agent-memory/hooks_claude.py", "session-start"],
+           "timeout": 90, "statusMessage": "Loading agent memory"}
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {"type": "command", "command": "python", "args": ["/path/to/agent-memory/hooks_claude.py", "post-tool-use"],
+           "timeout": 15, "async": true}
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {"type": "command", "command": "python", "args": ["/path/to/agent-memory/hooks_claude.py", "stop"],
+           "timeout": 20, "async": true}
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {"type": "command", "command": "python", "args": ["/path/to/agent-memory/hooks_claude.py", "pre-compact"],
+           "timeout": 45, "statusMessage": "Saving checkpoint before compaction"}
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {"type": "command", "command": "python", "args": ["/path/to/agent-memory/hooks_claude.py", "session-end"],
+           "timeout": 30}
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+# Standalone stack: PostgreSQL 18 (internal network, no published port) + one-shot migrations + the memory API.
+#   bash scripts/setup.sh        # first time: secrets, build, migrate, seed, agent tokens
+#   docker compose up -d         # afterwards
+# The API listens on 127.0.0.1:8790 only.
+name: agent-memory
+
+x-db-env: &db-env
+  DFMEM_DB_HOST: postgres
+  DFMEM_DB_PORT: "5432"
+  DFMEM_DB_NAME: agent_memory
+  DFMEM_DB_USER_APP: df_memoria_app
+  DFMEM_DB_PASSWORD_FILE_APP: /run/secrets/dfmem_app
+  DFMEM_DB_USER_MIGRADOR: df_memoria_migrador
+  DFMEM_DB_PASSWORD_FILE_MIGRADOR: /run/secrets/dfmem_migrador
+  DFMEM_PROYECTO_GLOBAL: dreamfactory
+
+services:
+  postgres:
+    image: postgres:18@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: memoria_admin
+      POSTGRES_DB: agent_memory
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg_super
+    secrets: [pg_super, dfmem_app, dfmem_migrador]
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./infra/bootstrap.sql:/bootstrap/bootstrap.sql:ro
+      - ./infra/initdb.sh:/docker-entrypoint-initdb.d/10-bootstrap.sh:ro
+    networks: [database]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U memoria_admin -d agent_memory"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: .
+    image: agent-memory:dev
+    command: ["alembic", "-c", "servidor/alembic.ini", "upgrade", "head"]
+    environment: *db-env
+    secrets: [dfmem_app, dfmem_migrador]
+    networks: [database]
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: "no"
+
+  memoria:
+    image: agent-memory:dev
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DFMEM_PORT:-8790}:8000"
+    environment: *db-env
+    secrets: [dfmem_app, dfmem_migrador]
+    networks: [database, api]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    mem_limit: 512m
+    cpus: 1.0
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+
+secrets:
+  pg_super: {file: ./secrets/pg_super.txt}
+  dfmem_app: {file: ./secrets/app.txt}
+  dfmem_migrador: {file: ./secrets/migrador.txt}
+
+volumes:
+  pgdata:
+
+networks:
+  database:
+    internal: true
+  api:
+    driver: bridge

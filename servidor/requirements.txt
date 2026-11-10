@@ -1,0 +1,8 @@
+# Mismas versiones fijadas que el backend de AI Game Factory (apps/backend/requirements.lock.txt)
+fastapi==0.153.0
+uvicorn==0.54.0
+psycopg[binary]==3.3.6
+SQLAlchemy==2.1.5
+alembic==1.20.0
+pydantic==2.14.1
+pytest==8.4.2
